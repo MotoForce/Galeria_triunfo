@@ -1,554 +1,266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08111f">
-<title>MyVoice book 4.1</title>
+<title>MyVoice book 4.2</title>
 <style>
-:root{
-  --bg:#07101c;--panel:#0d1b2e;--panel2:#10233b;--text:#eef6ff;--muted:#8da7c1;
-  --cyan:#44e7ff;--violet:#9b6cff;--green:#65efad;--amber:#ffd166;--red:#ff6b82;--line:#28445f;
-}
+:root{--bg:#07101c;--panel:#0d1b2e;--text:#eef6ff;--muted:#8da7c1;--cyan:#44e7ff;--violet:#9b6cff;--green:#65efad;--amber:#ffd166;--red:#ff6b82;--line:#28445f}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:
-radial-gradient(circle at 10% 0%,rgba(68,231,255,.10),transparent 28%),
-radial-gradient(circle at 90% 10%,rgba(155,108,255,.10),transparent 32%),
-linear-gradient(180deg,#07101c,#0a1728);
-color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-body{padding-bottom:env(safe-area-inset-bottom)}
-.wrap{max-width:1180px;margin:auto;padding:14px}
-header{display:flex;align-items:center;gap:13px;padding:8px 2px 16px}
-.logo{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-size:29px;
-background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 0 30px rgba(68,231,255,.18)}
-h1{margin:0;font-size:24px}.sub{color:var(--muted);font-size:12px;margin-top:2px}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:14px}
-.card{background:linear-gradient(180deg,rgba(14,28,47,.98),rgba(8,20,34,.98));border:1px solid var(--line);border-radius:21px;box-shadow:0 16px 50px rgba(0,0,0,.25)}
-.side,.main{padding:16px}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:1.15px;color:#8da7c1;margin:2px 0 8px}
+body{margin:0;background:linear-gradient(#07101c,#0a1728);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:12px}
+header{display:flex;align-items:center;gap:12px;padding:6px 2px 14px}
+.logo{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--violet));font-size:29px}
+h1{margin:0;font-size:24px}.sub{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:370px 1fr;gap:14px}
+.card{background:#0d1b2e;border:1px solid var(--line);border-radius:20px;box-shadow:0 16px 50px rgba(0,0,0,.26)}
+.side,.main{padding:15px}
+.label{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:#8da7c1;margin:2px 0 8px}
 select,button{font:inherit}
 select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0a1728;color:var(--text)}
 .btn{border:1px solid var(--line);background:#10223b;color:var(--text);border-radius:12px;padding:11px 12px;font-weight:700;cursor:pointer}
 .btn.primary{background:linear-gradient(135deg,#28d8ed,#806dff);border:none;color:#06101a}
 .btn.green{background:#123b2d;border-color:#2f7456;color:#b9ffd9}
 .btn.red{background:#28131c;border-color:#6a3342;color:#ff9aab}
-.mic{width:150px;height:150px;border-radius:50%;margin:17px auto 10px;display:grid;place-items:center;
-background:radial-gradient(circle at 35% 30%,#173654,#0a182b 65%);border:1px solid #2d5777;position:relative}
-.mic span{font-size:49px}.mic.on{border-color:var(--cyan);box-shadow:0 0 0 9px rgba(68,231,255,.05),0 0 38px rgba(68,231,255,.28)}
-.mic.on:after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(68,231,255,.18);animation:pulse 1.3s infinite}
-@keyframes pulse{0%{transform:scale(.96);opacity:.9}100%{transform:scale(1.09);opacity:0}}
-.status{min-height:50px;text-align:center;color:var(--muted);padding:3px 5px}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn.amber{background:#34280f;border-color:#6c5622;color:#ffe2a1}
+.mic{width:145px;height:145px;border-radius:50%;margin:15px auto 9px;display:grid;place-items:center;position:relative;background:#0a182b;border:1px solid #2d5777}
+.mic span{font-size:48px}.mic.on{border-color:var(--cyan);box-shadow:0 0 0 9px rgba(68,231,255,.05),0 0 38px rgba(68,231,255,.28)}
+.status{min-height:54px;text-align:center;color:var(--muted);padding:4px}
+.actions2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.audioCard,.interim{margin-top:12px;padding:10px;border:1px solid #25445c;background:#091725;border-radius:13px}
+.audioCard{display:none}.audioCard.show{display:block}audio{width:100%}
+.interim b{display:block;font-size:11px;letter-spacing:1px;color:#7894ae;text-transform:uppercase;margin-bottom:4px}
+#liveText{color:#c7e4f7;font-style:italic}
 .diag{margin-top:14px;border-top:1px solid #20394f;padding-top:12px}
 .diag-item{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #1b3348;color:#b7cbe0;font-size:13px}
 .ok{color:var(--green)}.warn{color:var(--amber)}.bad{color:var(--red)}
-.interimBox{margin-top:12px;padding:11px;border-radius:12px;border:1px solid #24465e;background:#091725}
-.interimTitle{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7894ae;margin-bottom:5px}
-#interim{min-height:39px;color:#b9d9ef;font-style:italic}
 .editorHead{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px}
-.actions{display:flex;gap:7px;flex-wrap:wrap}.actions .btn{padding:8px 10px;font-size:12px}
-.editor{min-height:465px;background:#071422;border:1px solid #294964;border-radius:16px;padding:16px;outline:none;font-size:17px;line-height:1.72;white-space:pre-wrap;overflow:auto}
-.editor:focus{border-color:#3ccfe0}
-.mark{background:linear-gradient(transparent 46%,rgba(255,209,102,.58) 46%);border-bottom:2px wavy #ffd166}
-.markbad{background:linear-gradient(transparent 40%,rgba(255,107,130,.64) 40%);border-bottom:2px wavy #ff6b82}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.k{background:#0a1728;border:1px solid #223c55;border-radius:12px;padding:10px}.k b{display:block;font-size:18px}.k small{color:var(--muted)}
+.editorActions{display:flex;gap:7px;flex-wrap:wrap}.editorActions .btn{padding:8px 10px;font-size:12px}
+.editor{min-height:470px;background:#071422;border:1px solid #294964;border-radius:16px;padding:16px;outline:none;font-size:17px;line-height:1.72;white-space:pre-wrap;overflow:auto}
 .notice{margin-top:12px;padding:11px;border-radius:12px;background:#0b1728;border:1px solid #233f58;color:#9db6cd;font-size:12px}
-.popup{position:fixed;left:14px;right:14px;bottom:18px;max-width:420px;margin:auto;display:none;background:#07111f;border:1px solid #33536e;padding:16px;border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.5);z-index:50}
-.popup.show{display:block}.neon{font-size:27px;font-weight:900;color:#aefaff;text-shadow:0 0 7px #3de7ff,0 0 18px #3de7ff,0 0 30px #9b6cff}
-footer{text-align:center;color:#718aa2;padding:16px 0 6px;font-size:11px}
-@media(max-width:850px){.grid{grid-template-columns:1fr}.editorHead{flex-direction:column}.editor{min-height:340px}}
-@media(max-width:480px){.wrap{padding:9px}.side,.main{padding:13px}.actions{display:grid;grid-template-columns:repeat(2,1fr);width:100%}.actions .btn{width:100%}.quick{grid-template-columns:1fr}.mic{width:136px;height:136px}}
+.popup{position:fixed;left:14px;right:14px;bottom:18px;max-width:430px;margin:auto;display:none;background:#07111f;border:1px solid #33536e;padding:16px;border-radius:18px;z-index:50}.popup.show{display:block}
+.neon{font-size:27px;font-weight:900;color:#aefaff;text-shadow:0 0 7px #3de7ff,0 0 18px #3de7ff,0 0 30px #9b6cff}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.editorHead{flex-direction:column}.editor{min-height:330px}}
+@media(max-width:480px){.actions2{grid-template-columns:1fr}.editorActions{display:grid;grid-template-columns:1fr 1fr}.editorActions .btn{width:100%}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
-  <div class="logo">🎙️</div>
-  <div>
-    <h1>MyVoice book 4.1</h1>
-    <div class="sub">Voz → texto → leitura em voz • Português e English</div>
-  </div>
-</header>
-
+<header><div class="logo">🎙️</div><div><h1>MyVoice book 4.2</h1><div class="sub">Android • gravação real • texto • reprodução</div></div></header>
 <div class="grid">
 <aside class="card side">
-  <div class="label">Idioma de reconhecimento</div>
-  <select id="lang">
-    <option value="pt-BR">Português (Brasil)</option>
-    <option value="en-US">English (US)</option>
-    <option value="en-GB">English (UK)</option>
-  </select>
+<div class="label">Idioma</div>
+<select id="lang"><option value="pt-BR">Português (Brasil)</option><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option></select>
+<button id="mic" class="mic"><span>🎙️</span></button>
+<div id="status" class="status">Toque em TESTAR SISTEMA.</div>
 
-  <button id="mic" class="mic" aria-label="Iniciar gravação"><span>🎙️</span></button>
-  <div id="status" class="status">Toque em “Liberar microfone”.</div>
+<div class="actions2">
+<button id="test" class="btn primary">✅ Testar sistema</button>
+<button id="stop" class="btn red">⏹ Parar</button>
+<button id="testSound" class="btn green">🔊 Testar som</button>
+<button id="installLang" class="btn amber">⬇ Idioma offline</button>
+</div>
 
-  <div class="quick">
-    <button id="unlock" class="btn primary">🔓 Liberar microfone</button>
-    <button id="https" class="btn">🔒 HTTPS</button>
-  </div>
+<div class="interim"><b>Texto em tempo real</b><div id="liveText">—</div></div>
 
-  <div class="row" style="margin-top:8px">
-    <button id="stop" class="btn red">Parar</button>
-    <button id="speak" class="btn green">🔊 Ler texto</button>
-  </div>
+<div id="audioCard" class="audioCard">
+<div class="label">Áudio realmente capturado</div>
+<audio id="player" controls></audio>
+<div class="sub">Se sua voz tocar aqui, o microfone funcionou.</div>
+</div>
 
-  <div class="interimBox">
-    <div class="interimTitle">Reconhecimento em tempo real</div>
-    <div id="interim">—</div>
-  </div>
+<div class="diag">
+<div class="label">Diagnóstico</div>
+<div class="diag-item"><span>HTTPS</span><b id="dHttps">—</b></div>
+<div class="diag-item"><span>Microfone</span><b id="dMic">—</b></div>
+<div class="diag-item"><span>MediaRecorder</span><b id="dRec">—</b></div>
+<div class="diag-item"><span>SpeechRecognition</span><b id="dSpeech">—</b></div>
+<div class="diag-item"><span>SpeechSynthesis</span><b id="dTts">—</b></div>
+<div class="diag-item"><span>Resultado de texto</span><b id="dResult">Aguardando</b></div>
+</div>
 
-  <div class="kpis">
-    <div class="k"><b id="wc">0</b><small>palavras</small></div>
-    <div class="k"><b id="cc">0</b><small>caracteres</small></div>
-    <div class="k"><b id="fc">0</b><small>alertas</small></div>
-  </div>
-
-  <div class="diag">
-    <div class="label">Diagnóstico</div>
-    <div class="diag-item"><span>HTTPS</span><b id="dHttps">—</b></div>
-    <div class="diag-item"><span>Microfone</span><b id="dMic">—</b></div>
-    <div class="diag-item"><span>Reconhecimento</span><b id="dSpeech">—</b></div>
-    <div class="diag-item"><span>Saída de voz</span><b id="dTts">—</b></div>
-  </div>
-
-  <div class="notice">
-    Esta versão mostra a fala provisória imediatamente em “Reconhecimento em tempo real”. Quando o navegador confirma a frase, ela é enviada para o editor principal. O botão “Ler texto” usa a voz do próprio Android/Chrome.
-  </div>
+<div class="notice">O áudio é gravado independentemente da transcrição. Se o player tocar sua voz e não houver texto, o problema está no serviço de reconhecimento do navegador, não no microfone.</div>
 </aside>
 
 <main class="card main">
-  <div class="editorHead">
-    <div>
-      <div class="label">Texto convertido</div>
-      <div class="sub">Trechos suspeitos são destacados sem completar conteúdo por suposição.</div>
-    </div>
-    <div class="actions">
-      <button id="review" class="btn">Revisar</button>
-      <button id="copy" class="btn">Copiar</button>
-      <button id="download" class="btn primary">Baixar TXT</button>
-      <button id="clear" class="btn red">Limpar</button>
-    </div>
-  </div>
-
-  <div id="editor" class="editor" contenteditable="true" spellcheck="true"></div>
+<div class="editorHead"><div><div class="label">Texto convertido</div><div class="sub">O resultado final reconhecido aparece aqui.</div></div>
+<div class="editorActions">
+<button id="speakText" class="btn green">🔊 Ler texto</button>
+<button id="copy" class="btn">Copiar</button>
+<button id="download" class="btn primary">TXT</button>
+<button id="clear" class="btn red">Limpar</button>
+</div></div>
+<div id="editor" class="editor" contenteditable="true" spellcheck="true"></div>
 </main>
 </div>
-
-<footer>MyVoice book • versão web otimizada para Android com HTTPS.</footer>
 </div>
 
-<div id="popup" class="popup">
-  <div class="neon">é o que?</div>
-  <div class="sub" style="margin-top:5px">Trecho pouco compreensível. Confira o destaque antes de aceitar.</div>
-  <button id="close" class="btn" style="margin-top:10px">Fechar</button>
-</div>
+<div id="popup" class="popup"><div class="neon">é o que?</div><div id="popupText" class="sub" style="margin-top:5px"></div><button id="close" class="btn" style="margin-top:10px">Fechar</button></div>
 
 <script>
 (()=>{
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const synth = window.speechSynthesis;
-const q = id => document.getElementById(id);
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const q=id=>document.getElementById(id);
+const lang=q('lang'),mic=q('mic'),status=q('status'),editor=q('editor'),live=q('liveText'),audioCard=q('audioCard'),player=q('player');
+let stream=null,recorder=null,chunks=[],recognition=null,running=false,gotResult=false,recordingUrl=null;
 
-const mic = q('mic');
-const status = q('status');
-const editor = q('editor');
-const interimEl = q('interim');
-const lang = q('lang');
-const popup = q('popup');
+function diag(id,text,cls){const e=q(id);e.textContent=text;e.className=cls||''}
+function secure(){return location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)}
+diag('dHttps',secure()?'OK':'Necessário',secure()?'ok':'bad');
+diag('dMic',navigator.mediaDevices?.getUserMedia?'Disponível':'Indisponível',navigator.mediaDevices?.getUserMedia?'ok':'bad');
+diag('dRec',window.MediaRecorder?'Disponível':'Indisponível',window.MediaRecorder?'ok':'bad');
+diag('dSpeech',SR?'Disponível':'Indisponível',SR?'ok':'bad');
+diag('dTts','speechSynthesis' in window?'Disponível':'Indisponível','speechSynthesis' in window?'ok':'bad');
 
-let recognition = null;
-let listening = false;
-let shouldRestart = false;
-let mediaStream = null;
-let alertCount = 0;
-let lastFinalAt = 0;
+function popup(msg){q('popupText').textContent=msg;q('popup').classList.add('show')}
+q('close').onclick=()=>q('popup').classList.remove('show');
 
-function diag(id,text,cls){
-  const el=q(id);
-  el.textContent=text;
-  el.className=cls||'';
+async function openMic(){
+ if(!secure())throw new Error('HTTPS_REQUIRED');
+ if(stream?.active)return stream;
+ stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+ const track=stream.getAudioTracks()[0];
+ if(!track)throw new Error('NO_AUDIO_TRACK');
+ diag('dMic','Áudio aberto','ok');
+ return stream;
 }
 
-function isSecureContextForMic(){
-  return location.protocol==='https:' || ['localhost','127.0.0.1'].includes(location.hostname);
+function pickMime(){
+ const list=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'];
+ return list.find(t=>MediaRecorder.isTypeSupported?.(t))||'';
 }
 
-diag('dHttps',isSecureContextForMic()?'OK':'Necessário',isSecureContextForMic()?'ok':'bad');
-diag('dSpeech',SpeechRecognition?'Disponível':'Indisponível',SpeechRecognition?'ok':'bad');
-diag('dTts',('speechSynthesis' in window)?'Disponível':'Indisponível',('speechSynthesis' in window)?'ok':'bad');
-
-function stats(){
-  const t=editor.innerText.trim();
-  q('wc').textContent=t?t.split(/\s+/).filter(Boolean).length:0;
-  q('cc').textContent=t.length;
-  q('fc').textContent=alertCount;
+function startRecorder(s){
+ chunks=[];
+ const mime=pickMime();
+ recorder=mime?new MediaRecorder(s,{mimeType:mime}):new MediaRecorder(s);
+ recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+ recorder.onstop=()=>{
+   const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});
+   if(recordingUrl)URL.revokeObjectURL(recordingUrl);
+   recordingUrl=URL.createObjectURL(blob);
+   player.src=recordingUrl;
+   audioCard.classList.add('show');
+   diag('dRec',blob.size>0?Math.round(blob.size/1024)+' KB':'0 KB',blob.size>0?'ok':'bad');
+   if(!gotResult&&blob.size>0){
+     status.textContent='Áudio capturado, mas sem texto.';
+     diag('dResult','Nenhum resultado','bad');
+     popup('O áudio foi capturado, mas o navegador não devolveu texto.');
+   }
+ };
+ recorder.start(250);
 }
 
-function showPopup(){
-  popup.classList.add('show');
-  clearTimeout(showPopup.t);
-  showPopup.t=setTimeout(()=>popup.classList.remove('show'),4500);
-}
-q('close').onclick=()=>popup.classList.remove('show');
-
-async function unlockMic(){
-  if(!isSecureContextForMic()){
-    status.textContent='O microfone exige HTTPS neste endereço.';
-    diag('dMic','Bloqueado por HTTP','bad');
-    return false;
-  }
-
-  try{
-    if(!navigator.mediaDevices?.getUserMedia){
-      throw new Error('getUserMedia indisponível');
-    }
-
-    mediaStream = await navigator.mediaDevices.getUserMedia({
-      audio:{
-        echoCancellation:true,
-        noiseSuppression:true,
-        autoGainControl:true
-      }
-    });
-
-    const track = mediaStream.getAudioTracks()[0];
-    if(track && track.readyState==='live'){
-      diag('dMic','Liberado','ok');
-      status.textContent='Microfone liberado. Toque no círculo para falar.';
-      setTimeout(()=>{
-        if(mediaStream && !listening){
-          mediaStream.getTracks().forEach(t=>t.stop());
-          mediaStream=null;
-        }
-      },1500);
-      return true;
-    }
-
-    diag('dMic','Sem áudio','bad');
-    status.textContent='O navegador abriu a permissão, mas não entregou áudio.';
-    return false;
-  }catch(e){
-    const name=e?.name||'Erro';
-    diag('dMic',name,'bad');
-    if(name==='NotAllowedError'){
-      status.textContent='Permissão do microfone negada pelo navegador.';
-    }else if(name==='NotReadableError'){
-      status.textContent='O microfone está ocupado por outro aplicativo.';
-    }else{
-      status.textContent='Falha ao acessar o microfone: '+name;
-    }
-    return false;
-  }
-}
-
-q('unlock').onclick=unlockMic;
-
-q('https').onclick=()=>{
-  if(location.protocol==='https:'){
-    status.textContent='Você já está em HTTPS.';
-    return;
-  }
-  if(location.protocol==='file:'){
-    status.textContent='Arquivo local não pode criar HTTPS sozinho. Publique em GitHub Pages, Cloudflare Pages, Netlify ou Vercel.';
-    return;
-  }
-  if(['localhost','127.0.0.1'].includes(location.hostname)){
-    status.textContent='localhost é aceito como contexto seguro.';
-    return;
-  }
-  location.href='https://'+location.host+location.pathname+location.search+location.hash;
-};
-
-function conservativePolish(text){
-  let t=text.replace(/\s+/g,' ').trim();
-  if(!t)return '';
-  t=t.charAt(0).toLocaleUpperCase(lang.value)+t.slice(1);
-  if(!/[.!?…]$/.test(t))t+='.';
-  return t;
-}
-
-function classify(text, confidence){
-  const words=text.split(/\s+/).filter(Boolean);
-  const filler=/\b(ã+h?|éh+|eh+|hum+|hmm+|uh+|um+)\b/i.test(text);
-  const repeated=/\b(\p{L}+)(?:\s+\1){2,}\b/iu.test(text);
-  const shortOdd=words.length===1 && text.length<4;
-  const low=(typeof confidence==='number' && confidence>0 && confidence<0.58);
-  const uncertain=(typeof confidence==='number' && confidence>0 && confidence<0.76);
-  if(low || shortOdd)return 'bad';
-  if(filler || repeated || uncertain)return 'warn';
-  return '';
-}
-
-function appendFinal(text,type){
-  if(!text)return;
-  const wrapper=document.createElement('span');
-  if(editor.innerText.trim())wrapper.append(document.createTextNode(' '));
-
-  const span=document.createElement('span');
-  span.textContent=text;
-  if(type==='bad')span.className='markbad';
-  else if(type==='warn')span.className='mark';
-
-  wrapper.append(span);
-  editor.append(wrapper);
-
-  if(type){
-    alertCount++;
-    showPopup();
-  }
-
-  lastFinalAt=Date.now();
-  stats();
-  editor.scrollTop=editor.scrollHeight;
+function appendText(text){
+ text=(text||'').replace(/\s+/g,' ').trim();
+ if(!text)return;
+ text=text.charAt(0).toLocaleUpperCase(lang.value)+text.slice(1);
+ if(!/[.!?…]$/.test(text))text+='.';
+ if(editor.innerText.trim())editor.append(document.createTextNode(' '));
+ editor.append(document.createTextNode(text));
 }
 
 function createRecognition(){
-  if(!SpeechRecognition)return null;
-
-  const r=new SpeechRecognition();
-  r.continuous=true;
-  r.interimResults=true;
-  r.maxAlternatives=3;
-  r.lang=lang.value;
-
-  r.onstart=()=>{
-    listening=true;
-    mic.classList.add('on');
-    status.textContent='Ouvindo…';
-    diag('dSpeech','Ativo','ok');
-  };
-
-  r.onaudiostart=()=>{
-    status.textContent='Áudio detectado…';
-  };
-
-  r.onspeechstart=()=>{
-    status.textContent='Fala detectada…';
-  };
-
-  r.onresult=(event)=>{
-    let interim='';
-    let receivedFinal=false;
-
-    for(let i=event.resultIndex;i<event.results.length;i++){
-      const result=event.results[i];
-      const alt=result[0];
-
-      if(result.isFinal){
-        const text=conservativePolish(alt.transcript||'');
-        const type=classify(text,alt.confidence);
-        appendFinal(text,type);
-        receivedFinal=true;
-      }else{
-        interim += (alt.transcript||'') + ' ';
-      }
-    }
-
-    interim=interim.trim();
-    interimEl.textContent=interim || '—';
-
-    if(receivedFinal){
-      interimEl.textContent='—';
-      status.textContent='Frase adicionada ao texto.';
-    }
-  };
-
-  r.onerror=(event)=>{
-    const error=event.error||'erro';
-    const map={
-      'not-allowed':'Permissão do microfone negada.',
-      'audio-capture':'O reconhecimento não conseguiu receber o áudio.',
-      'network':'Falha de rede do serviço de reconhecimento.',
-      'no-speech':'Nenhuma fala foi detectada.',
-      'service-not-allowed':'Serviço de reconhecimento indisponível.',
-      'aborted':'Reconhecimento interrompido.'
-    };
-
-    status.textContent=map[error]||('Erro de reconhecimento: '+error);
-
-    if(['not-allowed','audio-capture','service-not-allowed'].includes(error)){
-      shouldRestart=false;
-      listening=false;
-      mic.classList.remove('on');
-      diag('dSpeech','Erro: '+error,'bad');
-    }
-  };
-
-  r.onend=()=>{
-    listening=false;
-    mic.classList.remove('on');
-
-    if(shouldRestart){
-      setTimeout(()=>{
-        if(shouldRestart){
-          try{
-            r.lang=lang.value;
-            r.start();
-          }catch(e){
-            status.textContent='Não foi possível reiniciar o reconhecimento.';
-            shouldRestart=false;
-          }
-        }
-      },300);
-    }else{
-      status.textContent='Reconhecimento parado.';
-      interimEl.textContent='—';
-      diag('dSpeech','Disponível','ok');
-    }
-  };
-
-  return r;
+ if(!SR)return null;
+ const r=new SR();
+ r.continuous=true;r.interimResults=true;r.maxAlternatives=3;r.lang=lang.value;
+ r.onstart=()=>{diag('dSpeech','Ativo','ok');status.textContent='Reconhecimento iniciado.'};
+ r.onaudiostart=()=>status.textContent='Áudio chegando ao reconhecedor…';
+ r.onspeechstart=()=>status.textContent='Fala detectada…';
+ r.onresult=e=>{
+   gotResult=true;diag('dResult','Recebido','ok');
+   let temp='';
+   for(let i=e.resultIndex;i<e.results.length;i++){
+     const res=e.results[i],txt=res[0]?.transcript||'';
+     if(res.isFinal)appendText(txt); else temp+=txt+' ';
+   }
+   live.textContent=temp.trim()||'—';
+   if(editor.innerText.trim())status.textContent='Texto recebido.';
+ };
+ r.onerror=e=>{const err=e.error||'erro';diag('dSpeech','Erro: '+err,'bad');status.textContent='Reconhecimento: '+err};
+ r.onend=()=>{if(running){setTimeout(()=>{try{r.lang=lang.value;r.start()}catch(e){}},300)}else diag('dSpeech','Disponível','ok')};
+ return r;
 }
-
 recognition=createRecognition();
 
-mic.onclick=async()=>{
-  if(!recognition){
-    status.textContent='Este navegador não oferece reconhecimento de voz. Use Chrome/Edge atualizado.';
-    diag('dSpeech','Indisponível','bad');
-    return;
-  }
-
-  if(listening || shouldRestart){
-    shouldRestart=false;
-    try{recognition.stop()}catch(e){}
-    return;
-  }
-
-  const ok=await unlockMic();
-  if(!ok)return;
-
-  shouldRestart=true;
-  recognition.lang=lang.value;
-
-  try{
-    recognition.start();
-  }catch(e){
-    shouldRestart=false;
-    status.textContent='Falha ao iniciar reconhecimento: '+(e.name||'erro');
-  }
-};
-
-q('stop').onclick=()=>{
-  shouldRestart=false;
-  listening=false;
-  try{recognition&&recognition.stop()}catch(e){}
-  if(synth)synth.cancel();
-  mic.classList.remove('on');
-  status.textContent='Parado.';
-};
-
-lang.onchange=()=>{
-  if(recognition)recognition.lang=lang.value;
-};
-
-q('speak').onclick=()=>{
-  const text=editor.innerText.trim();
-
-  if(!text){
-    status.textContent='Não há texto para ler.';
-    return;
-  }
-
-  if(!('speechSynthesis' in window)){
-    status.textContent='Saída de voz não disponível neste navegador.';
-    diag('dTts','Indisponível','bad');
-    return;
-  }
-
-  synth.cancel();
-
-  const utter=new SpeechSynthesisUtterance(text);
-  utter.lang=lang.value;
-  utter.rate=1.0;
-  utter.pitch=1.0;
-  utter.volume=1.0;
-
-  const voices=synth.getVoices();
-  const exact=voices.find(v=>v.lang===lang.value);
-  const prefix=voices.find(v=>v.lang?.toLowerCase().startsWith(lang.value.slice(0,2).toLowerCase()));
-  if(exact||prefix)utter.voice=exact||prefix;
-
-  utter.onstart=()=>{
-    status.textContent='Lendo texto em voz…';
-    diag('dTts','Falando','ok');
-  };
-
-  utter.onend=()=>{
-    status.textContent='Leitura concluída.';
-    diag('dTts','Disponível','ok');
-  };
-
-  utter.onerror=(e)=>{
-    status.textContent='Falha na saída de voz: '+(e.error||'erro');
-    diag('dTts','Erro','bad');
-  };
-
-  synth.speak(utter);
-};
-
-q('review').onclick=()=>{
-  let t=editor.innerText.replace(/[ \t]+/g,' ').replace(/\n{3,}/g,'\n\n').trim();
-  if(!t){
-    status.textContent='Não há texto para revisar.';
-    return;
-  }
-
-  const sentences=t.split(/(?<=[.!?])\s+/).map(s=>{
-    s=s.trim();
-    if(!s)return '';
-    s=s.charAt(0).toLocaleUpperCase(lang.value)+s.slice(1);
-    return s;
-  }).filter(Boolean);
-
-  editor.textContent=sentences.join(' ');
-  alertCount=0;
-  stats();
-  status.textContent='Revisão conservadora concluída.';
-};
-
-q('copy').onclick=async()=>{
-  const t=editor.innerText.trim();
-  if(!t)return;
-  try{
-    await navigator.clipboard.writeText(t);
-    status.textContent='Texto copiado.';
-  }catch(e){
-    status.textContent='Não foi possível copiar automaticamente.';
-  }
-};
-
-q('download').onclick=()=>{
-  const t=editor.innerText.trim();
-  if(!t)return;
-  const blob=new Blob([t],{type:'text/plain;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='myvoice-book-transcricao.txt';
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),500);
-};
-
-q('clear').onclick=()=>{
-  editor.innerHTML='';
-  interimEl.textContent='—';
-  alertCount=0;
-  stats();
-  status.textContent='Texto limpo.';
-};
-
-editor.addEventListener('input',stats);
-stats();
-
-if('speechSynthesis' in window){
-  // Some Android browsers populate voices asynchronously.
-  speechSynthesis.onvoiceschanged=()=>{
-    diag('dTts','Disponível','ok');
-  };
+async function startAll(){
+ if(running)return;
+ gotResult=false;diag('dResult','Aguardando','warn');live.textContent='—';
+ try{
+   const s=await openMic();
+   startRecorder(s);
+   running=true;mic.classList.add('on');status.textContent='Gravando áudio…';
+   if(recognition){
+     recognition.lang=lang.value;
+     try{recognition.start(s.getAudioTracks()[0])}
+     catch(e){try{recognition.start()}catch(err){status.textContent='Áudio gravando, reconhecimento não iniciou.'}}
+   }else status.textContent='Áudio gravando. SpeechRecognition indisponível.';
+ }catch(e){
+   running=false;mic.classList.remove('on');
+   status.textContent=e.message==='HTTPS_REQUIRED'?'HTTPS é obrigatório.':'Falha no microfone: '+(e.name||e.message);
+ }
 }
+
+function stopAll(){
+ running=false;mic.classList.remove('on');
+ try{recognition&&recognition.stop()}catch(e){}
+ try{if(recorder&&recorder.state==='recording')recorder.stop()}catch(e){}
+ if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}
+ live.textContent='—';
+}
+
+mic.onclick=()=>running?stopAll():startAll();
+q('stop').onclick=stopAll;
+
+q('test').onclick=async()=>{
+ try{
+   const s=await openMic(),track=s.getAudioTracks()[0];
+   diag('dMic',track?.readyState==='live'?'OK':'Falha',track?.readyState==='live'?'ok':'bad');
+   status.textContent='Microfone OK. Grave uma frase e pare.';
+   setTimeout(()=>{if(!running&&stream){stream.getTracks().forEach(t=>t.stop());stream=null}},1000);
+ }catch(e){status.textContent='Teste falhou: '+(e.name||e.message);diag('dMic','Falha','bad')}
+};
+
+q('testSound').onclick=()=>{
+ try{
+   const AC=window.AudioContext||window.webkitAudioContext;
+   if(!AC)throw 0;
+   const c=new AC(),o=c.createOscillator(),g=c.createGain();
+   o.connect(g);g.connect(c.destination);o.frequency.value=660;g.gain.value=.08;o.start();o.stop(c.currentTime+.18);
+   status.textContent='Som de teste executado.';diag('dTts','Áudio OK','ok');
+ }catch(e){status.textContent='Falha no som.';diag('dTts','Falha','bad')}
+};
+
+q('speakText').onclick=()=>{
+ const text=editor.innerText.trim();
+ if(!text){status.textContent='Não há texto para ler.';return}
+ if(!('speechSynthesis' in window)){status.textContent='SpeechSynthesis indisponível.';return}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);u.lang=lang.value;
+ const voices=speechSynthesis.getVoices();
+ u.voice=voices.find(v=>v.lang===lang.value)||voices.find(v=>v.lang?.startsWith(lang.value.slice(0,2)))||null;
+ u.onstart=()=>{status.textContent='Lendo texto…';diag('dTts','Falando','ok')};
+ u.onend=()=>{status.textContent='Leitura concluída.';diag('dTts','Disponível','ok')};
+ u.onerror=e=>{status.textContent='TTS falhou: '+(e.error||'erro');diag('dTts','Erro','bad')};
+ speechSynthesis.speak(u);
+};
+
+q('installLang').onclick=async()=>{
+ if(!SR){status.textContent='SpeechRecognition indisponível.';return}
+ if(typeof SR.available!=='function'||typeof SR.install!=='function'){status.textContent='Instalação offline não suportada neste navegador.';return}
+ try{
+   const a=await SR.available({langs:[lang.value],processLocally:true});
+   if(a==='available'){status.textContent='Idioma já disponível.';return}
+   const ok=await SR.install({langs:[lang.value]});
+   status.textContent=ok?'Idioma instalado.':'Não foi possível instalar o idioma.';
+ }catch(e){status.textContent='Instalação local não suportada neste aparelho.'}
+};
+
+q('copy').onclick=async()=>{try{await navigator.clipboard.writeText(editor.innerText);status.textContent='Texto copiado.'}catch(e){status.textContent='Falha ao copiar.'}};
+q('download').onclick=()=>{const t=editor.innerText.trim();if(!t)return;const b=new Blob([t],{type:'text/plain;charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='myvoice-book.txt';a.click();setTimeout(()=>URL.revokeObjectURL(u),500)};
+q('clear').onclick=()=>{editor.innerHTML='';live.textContent='—';status.textContent='Texto limpo.'};
+lang.onchange=()=>{if(recognition)recognition.lang=lang.value};
 })();
 </script>
 </body>
