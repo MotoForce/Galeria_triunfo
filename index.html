@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <meta name="theme-color" content="#0b1020" />
-<title>LIBRAS Vision V2 — Diagnóstico Android</title>
+<title>LIBRAS Vision — MVP</title>
 <style>
 :root{--bg:#07111f;--card:#0e1a2c;--muted:#9fb1c7;--text:#f7fbff;--acc:#57e6c2;--acc2:#6ea8fe;--warn:#ffcc66;--danger:#ff7b7b;--ok:#7df5b2}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#07111f,#0b1424 60%,#07111f);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
@@ -17,7 +17,7 @@
 </head>
 <body>
 <div class="app">
-  <div class="top"><div class="logo">LV</div><div class="title"><h1>LIBRAS Vision V2</h1><p>Android — câmera → gesto estático → texto/voz + diagnóstico</p></div></div>
+  <div class="top"><div class="logo">LV</div><div class="title"><h1>LIBRAS Vision</h1><p>MVP web — câmera → gesto estático → texto/voz</p></div></div>
   <div class="grid">
     <section class="card">
       <div class="camera">
@@ -30,17 +30,10 @@
         <button id="stopBtn" class="btn danger" disabled>Parar</button>
         <button id="clearBtn" class="btn">Limpar texto</button>
         <button id="speakBtn" class="btn">🔊 Falar texto</button>
-        <button id="diagBtn" class="btn">Diagnosticar câmera</button>
-        <button id="externalBtn" class="btn" hidden>Abrir fora da prévia</button>
       </div>
     </section>
 
     <aside class="side">
-      <section class="card panel" id="diagnosticPanel">
-        <div class="label">Diagnóstico da câmera</div>
-        <div id="diagBox" class="note">Ainda não executado.</div>
-      </section>
-
       <section class="card panel">
         <div class="label">Texto reconhecido</div>
         <div id="result" class="result">—</div>
@@ -86,9 +79,6 @@ const fpsEl = document.getElementById('fps');
 const handsEl = document.getElementById('hands');
 const historyEl = document.getElementById('history');
 const autoSpeak = document.getElementById('autoSpeak');
-const diagBtn=document.getElementById('diagBtn');
-const externalBtn=document.getElementById('externalBtn');
-const diagBox=document.getElementById('diagBox');
 
 let stream=null, running=false, handsModel=null, raf=0, lastFrame=0, fpsEMA=0;
 let transcript=[]; let candidate=''; let candidateFrames=0; let lastAccepted=''; let lastAcceptedAt=0;
@@ -160,84 +150,16 @@ async function initModel(){
   handsModel.onResults(onResults);
 }
 
-function inIframe(){ try{return window.self!==window.top}catch(_){return true} }
-function cameraPolicyAllowed(){
-  try{
-    if(document.permissionsPolicy?.allowsFeature) return document.permissionsPolicy.allowsFeature('camera');
-    if(document.featurePolicy?.allowsFeature) return document.featurePolicy.allowsFeature('camera');
-  }catch(_){}
-  return null;
-}
-async function cameraPermissionState(){
-  try{
-    if(!navigator.permissions?.query) return 'indisponível';
-    const p=await navigator.permissions.query({name:'camera'});
-    return p.state || 'desconhecido';
-  }catch(_){ return 'não suportado'; }
-}
-async function diagnoseCamera(show=true){
-  const lines=[];
-  const secure=window.isSecureContext || location.hostname==='localhost';
-  const framed=inIframe();
-  const policy=cameraPolicyAllowed();
-  const media=!!navigator.mediaDevices?.getUserMedia;
-  const perm=await cameraPermissionState();
-  let devices='não verificado';
-  try{
-    if(navigator.mediaDevices?.enumerateDevices){
-      const all=await navigator.mediaDevices.enumerateDevices();
-      devices=String(all.filter(d=>d.kind==='videoinput').length);
-    }
-  }catch(_){devices='erro ao listar'}
-  lines.push(`HTTPS/contexto seguro: ${secure?'SIM':'NÃO'}`);
-  lines.push(`Dentro de prévia/iframe: ${framed?'SIM':'NÃO'}`);
-  lines.push(`Política permite câmera: ${policy===null?'não detectável':policy?'SIM':'NÃO'}`);
-  lines.push(`getUserMedia disponível: ${media?'SIM':'NÃO'}`);
-  lines.push(`Permissão reportada: ${perm}`);
-  lines.push(`Câmeras visíveis ao navegador: ${devices}`);
-  if(framed) lines.push('AÇÃO: abra o aplicativo diretamente em uma página HTTPS, fora da prévia incorporada.');
-  if(policy===false) lines.push('AÇÃO: o container atual bloqueia câmera por Permissions-Policy; isso não pode ser liberado pelo JavaScript da página.');
-  if(!secure) lines.push('AÇÃO: publique em HTTPS.');
-  if(!media) lines.push('AÇÃO: use Chrome/Edge atualizados em Android e abra a página diretamente.');
-  const report=lines.join('\n');
-  if(show){diagBox.textContent=report; diagBox.style.whiteSpace='pre-wrap';}
-  externalBtn.hidden=!framed;
-  return {secure,framed,policy,media,perm,report};
-}
-function humanCameraError(e){
-  const n=e?.name||'Erro';
-  if(n==='NotAllowedError' || n==='PermissionDeniedError') return 'Acesso à câmera bloqueado. Se as permissões do Android já estão liberadas, abra a página fora da prévia/iframe e verifique a permissão específica do site no Chrome.';
-  if(n==='NotFoundError' || n==='DevicesNotFoundError') return 'Nenhuma câmera compatível foi encontrada pelo navegador.';
-  if(n==='NotReadableError' || n==='TrackStartError') return 'A câmera existe, mas está ocupada ou indisponível. Feche outros apps que estejam usando a câmera e tente novamente.';
-  if(n==='OverconstrainedError' || n==='ConstraintNotSatisfiedError') return 'A câmera não aceitou a configuração solicitada. Tentarei uma configuração mais simples.';
-  if(n==='SecurityError') return 'O navegador bloqueou a câmera por regra de segurança do contexto atual.';
-  return `${n}: ${e?.message||'falha ao abrir câmera'}`;
-}
-async function requestCameraWithFallback(){
-  const attempts=[
-    {video:{facingMode:{ideal:'user'},width:{ideal:720},height:{ideal:1280}},audio:false},
-    {video:{facingMode:'user'},audio:false},
-    {video:true,audio:false}
-  ];
-  let last;
-  for(const c of attempts){
-    try{return await navigator.mediaDevices.getUserMedia(c)}catch(e){last=e; if(e?.name==='NotAllowedError'||e?.name==='SecurityError') break;}
-  }
-  throw last||new Error('Falha desconhecida');
-}
 async function start(){
-  const d=await diagnoseCamera(true);
-  if(!d.secure){ setBadge('HTTPS necessário','warn'); detailEl.textContent='Abra esta aplicação em HTTPS.'; return; }
-  if(!d.media){ setBadge('Câmera indisponível','warn'); detailEl.textContent='Este navegador/contexto não disponibiliza getUserMedia.'; return; }
-  if(d.framed && d.policy===false){ setBadge('Prévia bloqueia câmera','warn'); detailEl.textContent='A prévia incorporada bloqueia a câmera. Use “Abrir fora da prévia” ou publique e abra o endereço HTTPS diretamente no Chrome.'; return; }
+  if(!window.isSecureContext && location.hostname!=='localhost'){
+    alert('A câmera em navegadores móveis normalmente exige HTTPS. Publique em HTTPS ou abra em localhost.'); return;
+  }
   try{
-    setBadge('Abrindo câmera…','warn');
     await initModel();
-    stream=await requestCameraWithFallback();
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:720},height:{ideal:1280}},audio:false});
     video.srcObject=stream; await video.play(); resizeCanvas(); running=true; startBtn.disabled=true; stopBtn.disabled=false; setBadge('Câmera ativa','ok'); lastFrame=performance.now(); loop();
   }catch(e){
-    console.error(e); setBadge('Falha na câmera','warn'); detailEl.textContent=humanCameraError(e);
-    diagBox.textContent=(await diagnoseCamera(false)).report+'\n\nERRO: '+humanCameraError(e); diagBox.style.whiteSpace='pre-wrap';
+    console.error(e); setBadge('Falha na câmera','warn'); detailEl.textContent='Não foi possível abrir a câmera. Verifique permissão do navegador e uso de HTTPS.';
   }
 }
 async function loop(){
@@ -248,9 +170,6 @@ async function loop(){
 }
 function stop(){running=false;cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null;ctx.clearRect(0,0,canvas.width,canvas.height);startBtn.disabled=false;stopBtn.disabled=true;handsEl.textContent='0';fpsEl.textContent='0';setBadge('Câmera parada','warn');detailEl.textContent='Aguardando câmera.'}
 startBtn.addEventListener('click',start); stopBtn.addEventListener('click',stop);
-diagBtn.addEventListener('click',()=>diagnoseCamera(true));
-externalBtn.addEventListener('click',()=>{ try{ window.open(location.href,'_blank','noopener,noreferrer'); }catch(_){} });
-window.addEventListener('DOMContentLoaded',()=>diagnoseCamera(true));
 clearBtn.addEventListener('click',()=>{transcript=[];resultEl.textContent='—';historyEl.innerHTML='<div class="chip">Nenhum sinal confirmado.</div>';lastAccepted='';});
 speakBtn.addEventListener('click',()=>speak(transcript.join(' ')));
 window.addEventListener('pagehide',stop);
